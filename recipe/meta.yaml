@@ -1,5 +1,5 @@
-{% set version = "3.7.2" %}
-{% set nvshmem4py_version = "0.3.1.38523630" %}
+{% set version = "3.8.0" %}
+{% set nvshmem4py_version = "0.4.0.38966635" %}
 
 {% set soname = version.split(".")[0] %}
 
@@ -21,7 +21,7 @@ source:
     sha256: "53317d2b759a570020c96c0a39ac67ca3a802ac35d81f7ca345b2877270ffd39"
 
 build:
-  number: 1
+  number: 0
   skip: true  # [not (linux64 or aarch64) or cuda_compiler_version in (None, "None")]
 
 requirements:
@@ -47,7 +47,7 @@ outputs:
         - "*rdma-core*"  # omitted as dependency - MOFED replaces rdma-core
     files:
       - lib/*nvshmem*.so.*
-      - lib/*nvshmem*.bc
+      - lib/*nvshmem*.bc*
     requirements:
       build:
         - {{ compiler('c') }}
@@ -80,16 +80,18 @@ outputs:
         - test -f $PREFIX/lib/nvshmem_bootstrap_shmem.so.3.0.0
         - test -L $PREFIX/lib/nvshmem_bootstrap_uid.so.3
         - test -f $PREFIX/lib/nvshmem_bootstrap_uid.so.3.0.0
-        - test -L $PREFIX/lib/nvshmem_transport_ibdevx.so.6
-        - test -f $PREFIX/lib/nvshmem_transport_ibdevx.so.6.0.0
-        - test -L $PREFIX/lib/nvshmem_transport_ibgda.so.6
-        - test -f $PREFIX/lib/nvshmem_transport_ibgda.so.6.0.0
-        - test -L $PREFIX/lib/nvshmem_transport_ibrc.so.6
-        - test -f $PREFIX/lib/nvshmem_transport_ibrc.so.6.0.0
-        - test -L $PREFIX/lib/nvshmem_transport_libfabric.so.6
-        - test -f $PREFIX/lib/nvshmem_transport_libfabric.so.6.0.0
-        - test -L $PREFIX/lib/nvshmem_transport_ucx.so.6
-        - test -f $PREFIX/lib/nvshmem_transport_ucx.so.6.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_gpunetio.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_gpunetio.so.7.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_ibdevx.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_ibdevx.so.7.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_ibgda.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_ibgda.so.7.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_ibrc.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_ibrc.so.7.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_libfabric.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_libfabric.so.7.0.0
+        - test -L $PREFIX/lib/nvshmem_transport_ucx.so.7
+        - test -f $PREFIX/lib/nvshmem_transport_ucx.so.7.0.0
 
   - name: libnvshmem-dev
     build:
@@ -121,6 +123,7 @@ outputs:
       - include/non_abi
       - lib/cmake/nvshmem
       - lib/*nvshmem*.so
+      - share/skills
       - share/src
     requirements:
       build:
@@ -173,11 +176,13 @@ outputs:
         - test -L $PREFIX/lib/nvshmem_bootstrap_pmix.so
         - test -L $PREFIX/lib/nvshmem_bootstrap_shmem.so
         - test -L $PREFIX/lib/nvshmem_bootstrap_uid.so
+        - test -L $PREFIX/lib/nvshmem_transport_gpunetio.so
         - test -L $PREFIX/lib/nvshmem_transport_ibdevx.so
         - test -L $PREFIX/lib/nvshmem_transport_ibgda.so
         - test -L $PREFIX/lib/nvshmem_transport_ibrc.so
         - test -L $PREFIX/lib/nvshmem_transport_libfabric.so
         - test -L $PREFIX/lib/nvshmem_transport_ucx.so
+        - test -f $PREFIX/share/skills/nvshmem-install/SKILL.md
 
   - name: libnvshmem-static
     files:
@@ -209,7 +214,7 @@ outputs:
       ignore_run_exports:
         - cuda-version
       string: "py{{ py }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}"
-      skip: true  # [py<310 or py>313 or cuda_compiler_version in (None, "None")]
+      skip: true  # [py<311 or py>314 or cuda_compiler_version in (None, "None")]
       script: bash ${RECIPE_DIR}/nvshmem4py-build.sh
     requirements:
       build:
